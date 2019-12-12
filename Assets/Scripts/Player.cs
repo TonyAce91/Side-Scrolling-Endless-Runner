@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class Player : MonoBehaviour
     Rigidbody2D rb = null;
     [SerializeField] private float speed = 0;
     [SerializeField] private float m_jumpSpeed = 0;
+
+    public UnityEvent onDeath;
+
     public int m_coins = 0;
 
     // Start is called before the first frame update
@@ -42,6 +46,14 @@ public class Player : MonoBehaviour
         if (collision.tag == "Fall Limit")
         {
             gameObject.SetActive(false);
+            onDeath.Invoke();
+        }
+
+        if (collision.tag == "Obstacle")
+        {
+            gameObject.SetActive(false);
+            onDeath.Invoke();
+            // Maybe create a 2D particle effect
         }
     }
 }
