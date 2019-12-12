@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     Rigidbody2D rb = null;
     [SerializeField] private float speed = 0;
     [SerializeField] private float m_jumpSpeed = 0;
+    public int m_coins = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -29,5 +30,18 @@ public class Player : MonoBehaviour
         //moveDirection.Set(speed, speed);
         rb.velocity = new Vector2(speed, rb.velocity.y);
         ////rb.velocity += new Vector2(speed, 0) * Time.fixedDeltaTime;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Coin")
+        {
+            m_coins++;
+            collision.gameObject.SetActive(false);
+        }
+        if (collision.tag == "Fall Limit")
+        {
+            gameObject.SetActive(false);
+        }
     }
 }
