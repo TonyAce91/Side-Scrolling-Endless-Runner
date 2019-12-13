@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
 {
-    [SerializeField] private GameObject m_prefab = null;
+    [SerializeField] private List<GameObject> m_prefab = new List<GameObject>();
     [SerializeField] private Transform m_spawnerPos = null;
     [SerializeField] private float m_minSpawnTimer = 0;
     [SerializeField] private float m_maxSpawnTimer = 0;
+
+    private Dictionary<int, List<GameObject>> m_worldList = new Dictionary<int, List<GameObject>>();
+
     private float m_timer = 0;
 
     // Start is called before the first frame update
@@ -30,7 +33,16 @@ public class LevelGenerator : MonoBehaviour
         else
         {
             m_timer = m_minSpawnTimer;
-            GameObject go = Instantiate(m_prefab, m_spawnerPos.position, Quaternion.identity);
+            int prefabNumber = Random.Range(0, m_prefab.Count - 1);
+            //if (m_worldList[prefabNumber].Count > 0)
+            //{
+            //    foreach (GameObject obj in m_worldList[prefabNumber])
+            //    {
+            //        if (!obj.activeSelf)
+            //            obj.SetActive(true);
+            //    }
+            //}
+            GameObject go = Instantiate(m_prefab[0], m_spawnerPos.position, Quaternion.identity);
         }
     }
 }
