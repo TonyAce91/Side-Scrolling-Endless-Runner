@@ -13,7 +13,8 @@ public class LevelGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_timer = Random.Range(m_minSpawnTimer, m_maxSpawnTimer);
+        m_timer = m_minSpawnTimer;
+        //m_timer = Random.Range(m_minSpawnTimer, m_maxSpawnTimer);
     }
 
     // Update is called once per frame
@@ -24,12 +25,12 @@ public class LevelGenerator : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (m_timer <= 0)
+        if (m_timer > 0)
+            m_timer -= Time.fixedDeltaTime;
+        else
         {
-            m_timer = Random.Range(m_minSpawnTimer, m_maxSpawnTimer);
+            m_timer = m_minSpawnTimer;
             GameObject go = Instantiate(m_prefab, m_spawnerPos.position, Quaternion.identity);
         }
-        else
-            m_timer -= Time.fixedDeltaTime;
     }
 }

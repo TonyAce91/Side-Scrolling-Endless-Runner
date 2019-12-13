@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     Rigidbody2D rb = null;
     [SerializeField] private float speed = 0;
     [SerializeField] private float m_jumpSpeed = 0;
+    [SerializeField] private float m_gravityMultiplier = 2f;
 
     public UnityEvent onDeath;
 
@@ -30,9 +31,10 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         //Vector2 moveDirection = new Vector2(0, 0);
-
+        if (rb.velocity.x < -1f)
+            gameObject.SetActive(false);
         //moveDirection.Set(speed, speed);
-        rb.velocity = new Vector2(speed, rb.velocity.y);
+        //rb.velocity = new Vector2(speed, rb.velocity.y);
         ////rb.velocity += new Vector2(speed, 0) * Time.fixedDeltaTime;
     }
 
