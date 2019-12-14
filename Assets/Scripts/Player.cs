@@ -14,19 +14,31 @@ public class Player : MonoBehaviour
     private LevelGenerator m_generator = null;
 
     public UnityEvent onDeath;
+    private Vector2 originalPosition = new Vector2(-10f, -4.5f);
 
     public int m_coins = 0;
     [SerializeField] private Text m_coinText = null;
+    [SerializeField] private EndGame endScript = null;
     private bool jumping = false;
     private bool m_grounded = false;
     private bool m_airborne = false;
     private int m_jumpNumber = 0;
+
+    private void OnEnable()
+    {
+        // Resets player
+        transform.position = originalPosition;
+        m_coins = 0;
+        m_coinText.text = "Coins: 0";
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         m_generator = FindObjectOfType<LevelGenerator>();
+        if (!endScript)
+            endScript = FindObjectOfType<EndGame>();
     }
 
     // Update is called once per frame
@@ -71,6 +83,7 @@ public class Player : MonoBehaviour
         gameObject.SetActive(false);
         onDeath.Invoke();
         m_generator.PlayerDied();
+        endScript.CollectedCoins(m_coins);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
