@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -10,10 +11,12 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed = 0;
     [SerializeField] private float m_jumpSpeed = 0;
     [SerializeField] private float m_gravityMultiplier = 2f;
+    private LevelGenerator m_generator = null;
 
     public UnityEvent onDeath;
 
     public int m_coins = 0;
+    [SerializeField] private Text m_coinText = null;
     private bool jumping = false;
     private bool m_grounded = false;
     private bool m_airborne = false;
@@ -23,6 +26,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        m_generator = FindObjectOfType<LevelGenerator>();
     }
 
     // Update is called once per frame
@@ -38,7 +42,7 @@ public class Player : MonoBehaviour
 
         // If player face smash the side of a cliff. Velocity will become negative
         if (rb.velocity.x < -3f)
-            gameObject.SetActive(false);
+            DeathSequence();
 
         // If player is falling, increase the effect of gravity to decrease air time and simulate game gravity
         if (rb.velocity.y < 0f)
@@ -46,12 +50,13 @@ public class Player : MonoBehaviour
         //if (jumping)
         //    rb.velocity += new Vector2(0, m_jumpSpeed) * Time.fixedDeltaTime;
 
+
         //moveDirection.Set(speed, speed);
         //rb.velocity = new Vector2(speed, rb.velocity.y);
         ////rb.velocity += new Vector2(speed, 0) * Time.fixedDeltaTime;
     }
 
-    private void JumpSequence()
+    public void JumpSequence()
     {
         //rb.AddForce(new Vector2(0f, m_jumpSpeed));
         if (m_grounded || (m_airborne && m_jumpNumber < 2))
@@ -61,6 +66,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void DeathSequence()
+    {
+        gameObject.SetActive(false);
+        onDeath.Invoke();
+        m_generator.PlayerDied();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Coin")
@@ -68,18 +80,16 @@ public class Player : MonoBehaviour
             m_coins++;
             //Debug.Log("Coins detected");
             collision.gameObject.SetActive(false);
+            m_coinText.text = "Coins: " + m_coins;
         }
         if (collision.tag == "Fall Limit")
         {
-            gameObject.SetActive(false);
-            onDeath.Invoke();
+            DeathSequence();
         }
 
         if (collision.tag == "Obstacle")
         {
-            gameObject.SetActive(false);
-            //Debug.Log("Obstacle detected");
-            onDeath.Invoke();
+            DeathSequence();
             // Maybe create a 2D particle effect
         }
 

@@ -8,6 +8,7 @@ TagManager:
   - Fall Limit
   - Obstacle
   - Ground
+  - Spawn Trigger
   layers:
   - Default
   - TransparentFX
