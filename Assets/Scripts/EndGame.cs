@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class EndGame : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class EndGame : MonoBehaviour
     {
         timer = duration;
         m_generator = FindObjectOfType<LevelGenerator>();
+        NullChecker();
     }
 
     // Update is called once per frame
@@ -57,4 +59,34 @@ public class EndGame : MonoBehaviour
     {
         m_coins = amount;
     }
+
+
+    // This is used to check for any null reference that could break the game
+    private void NullChecker()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isPlaying)
+        {
+            bool errorOccurred = false;
+
+            // Checks if any of the texts needed for this script are not set
+            if (gameOverText == null)
+            {   
+                EditorUtility.DisplayDialog("Error", "Game Over Text has not been set on End Game", "Exit");
+                errorOccurred = true;
+            }
+            if (endMessageText == null)
+            {
+                EditorUtility.DisplayDialog("Error", "End Message Text has not been set on End Game", "Exit");
+                errorOccurred = true;
+            }
+
+            // Turns off the application if any error occurs
+            if (errorOccurred)
+                EditorApplication.isPlaying = false;
+        }
+#endif
+    }
+
+
 }

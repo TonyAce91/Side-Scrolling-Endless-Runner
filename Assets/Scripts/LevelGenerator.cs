@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 
 public class LevelGenerator : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void OnEnable()
     {
+        NullChecker();
+
         // Resets the game
         foreach (WorldMovement world in activeWorlds)
         {
@@ -168,4 +171,40 @@ public class LevelGenerator : MonoBehaviour
         foreach (WorldMovement world in activeWorlds)
             world.speed = 0;
     }
+
+    // This is used to check for any null reference that could break the game
+    private void NullChecker()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isPlaying)
+        {
+            bool errorOccurred = false;
+
+            // Checks if any of the texts needed for this script are not set
+            if (m_worldPrefabs.Count <= 0)
+            {
+                EditorUtility.DisplayDialog("Error", "There are no world prefabs on level generator script", "Exit");
+                errorOccurred = true;
+            }
+            if (m_spawnerTransform == null)
+            {
+                EditorUtility.DisplayDialog("Error", "There is no spawner transform reference in Level generator script.", "Exit");
+                errorOccurred = true;
+            }
+
+            if (m_levelParent == null)
+            {
+                EditorUtility.DisplayDialog("Error", "There is no level parent that holds all world chunks in Level generator script.", "Exit");
+                errorOccurred = true;
+            }
+
+            // Turns off the application if any error occurs
+            if (errorOccurred)
+                EditorApplication.isPlaying = false;
+        }
+#endif
+    }
+
+
+
 }

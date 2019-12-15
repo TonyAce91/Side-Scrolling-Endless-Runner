@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor;
 
 public class MenuManager : MonoBehaviour
 {
@@ -11,6 +12,11 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Text m_instructionText = null;
     [SerializeField] private float m_pauseDuration = 3f;
     private float timer = 0;
+
+    private void Start()
+    {
+        NullChecker();
+    }
 
     // Update is called once per frame
     void Update()
@@ -70,4 +76,32 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
+
+    // This is used to check for any null reference that could break the game
+    private void NullChecker()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isPlaying)
+        {
+            bool errorOccurred = false;
+
+            // Checks if any of the texts needed for this script are not set
+            if (m_countdownText == null)
+            {
+                EditorUtility.DisplayDialog("Error", "Countdown Text has not been set on Menu Manager", "Exit");
+                errorOccurred = true;
+            }
+            if (m_instructionText == null)
+            {
+                EditorUtility.DisplayDialog("Error", "Instruction Text has not been set on Menu Manager", "Exit");
+                errorOccurred = true;
+            }
+
+            // Turns off the application if any error occurs
+            if (errorOccurred)
+                EditorApplication.isPlaying = false;
+        }
+#endif
+    }
+
 }

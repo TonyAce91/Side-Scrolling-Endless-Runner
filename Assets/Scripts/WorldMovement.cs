@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class WorldMovement : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class WorldMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         m_generator = FindObjectOfType<LevelGenerator>();
+        NullChecker();
     }
 
     private void FixedUpdate()
@@ -41,4 +43,33 @@ public class WorldMovement : MonoBehaviour
 
         }
     }
+
+    // This is used to check for any null reference that could break the game
+    private void NullChecker()
+    {
+#if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isPlaying)
+        {
+            bool errorOccurred = false;
+
+            // Checks if any of the texts needed for this script are not set
+            if (rb == null)
+            {
+                EditorUtility.DisplayDialog("Error", "One of the world chunks doesn't have a rigidbody 2D", "Exit");
+                errorOccurred = true;
+            }
+            if (m_generator == null)
+            {
+                EditorUtility.DisplayDialog("Error", "Level Generator can't be found. Make sure you have one in the scene.", "Exit");
+                errorOccurred = true;
+            }
+
+            // Turns off the application if any error occurs
+            if (errorOccurred)
+                EditorApplication.isPlaying = false;
+        }
+#endif
+    }
+
+
 }
