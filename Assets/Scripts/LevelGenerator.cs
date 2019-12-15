@@ -31,6 +31,7 @@ public class LevelGenerator : MonoBehaviour
         }
         activeWorlds.Clear();
         distance = 0;
+        distanceText.text = "Distance: " + distance.ToString("0") + "m";
 
         // Checks if there is already an existing dictionary entry for the first prefab
         if (!m_worldList.ContainsKey(0) || m_worldList[0].Count <= 0)
@@ -189,7 +190,8 @@ public class LevelGenerator : MonoBehaviour
 
     public void Deactivate(WorldMovement world)
     {
-        activeWorlds.Remove(world);
+        if (activeWorlds.Contains(world))
+            activeWorlds.Remove(world);
     }
 
     public void PlayerDied()

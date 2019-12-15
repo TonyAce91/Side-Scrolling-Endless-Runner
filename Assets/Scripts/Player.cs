@@ -44,8 +44,25 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetButtonDown("Jump"))
+#if (UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL || UNITY_EDITOR)
+        if (Input.GetButtonDown("Jump") && Time.timeScale > 0)
             JumpSequence();
+#elif (UNITY_IOS || UNITY_ANDROID)
+        if (Input.GetMouseButtonDown(0) && Time.timeScale > 0)
+        {
+            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //RaycastHit hitInfo;
+            //if (Physics.Raycast(ray, out hitInfo, float.MaxValue, 1 << 5, QueryTriggerInteraction.UseGlobal))
+            //{
+            //    Debug.Log("transform tag: " + hitInfo.transform.tag);
+            //    Debug.Log("collider tag: " + hitInfo.collider.tag);
+            //    if (hitInfo.collider.tag == "Jump Button")
+            //    {
+                    JumpSequence();
+            //    }
+            //}
+        }
+#endif
     }
 
     private void FixedUpdate()

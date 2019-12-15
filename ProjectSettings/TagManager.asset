@@ -9,6 +9,7 @@ TagManager:
   - Obstacle
   - Ground
   - Spawn Trigger
+  - Jump Button
   layers:
   - Default
   - TransparentFX

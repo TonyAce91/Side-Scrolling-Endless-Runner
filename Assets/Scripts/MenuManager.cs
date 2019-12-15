@@ -8,9 +8,9 @@ public class MenuManager : MonoBehaviour
 {
     private bool paused = false;
     [SerializeField] private Text m_countdownText = null;
+    [SerializeField] private Text m_instructionText = null;
     [SerializeField] private float m_pauseDuration = 3f;
     private float timer = 0;
-    private bool gameStarting = false;
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +30,7 @@ public class MenuManager : MonoBehaviour
         {
             Time.timeScale = 1;
             m_countdownText.text = "";
+            m_instructionText.text = "";
             gameObject.SetActive(false);
         }
 
@@ -43,7 +44,6 @@ public class MenuManager : MonoBehaviour
             Time.timeScale = 0;
         else
         {
-            gameStarting = true;
             timer = m_pauseDuration;
         }
     }
@@ -53,6 +53,13 @@ public class MenuManager : MonoBehaviour
         Time.timeScale = 0;
         paused = false;
         timer = m_pauseDuration;
+
+#if (UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL || UNITY_EDITOR)
+        m_instructionText.text = "Press space to Jump.You can also double Jump.";
+#elif (UNITY_IOS || UNITY_ANDROID)
+        m_instructionText.text = "Tap to Jump.You can also double Jump.";
+#endif
+
     }
 
     public void ExitGame()
