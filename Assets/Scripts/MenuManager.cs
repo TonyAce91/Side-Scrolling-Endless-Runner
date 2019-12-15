@@ -12,20 +12,17 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private float m_pauseDuration = 3f;
     private float timer = 0;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
     // Update is called once per frame
     void Update()
     {
+        // Checks whether the game has been unpaused and show timer to player
         if (!paused && timer > 0)
         {
             timer -= Time.unscaledDeltaTime;
             m_countdownText.text = timer.ToString("0");
         }
 
+        // Once timer turns out, plays the game
         if (!paused && timer <= 0)
         {
             Time.timeScale = 1;
@@ -40,14 +37,21 @@ public class MenuManager : MonoBehaviour
     {
         paused = !paused;
 
+        // Pauses the game and shows the player that the game has been paused
         if (paused)
+        {
+            m_countdownText.text = "PAUSED";
             Time.timeScale = 0;
+        }
         else
         {
+            // Sets pause timer the moment it has been unpaused
             timer = m_pauseDuration;
         }
     }
 
+    // Used when the game starts, adds a timer before starting to let the player get ready
+    // Adds instruction on how to play the game
     public void StartGame()
     {
         Time.timeScale = 0;

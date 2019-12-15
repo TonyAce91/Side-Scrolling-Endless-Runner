@@ -7,9 +7,6 @@ public class LevelGenerator : MonoBehaviour
 {
     [SerializeField] private List<WorldMovement> m_worldPrefabs = new List<WorldMovement>();
     [SerializeField] private Transform m_spawnerTransform = null;
-    //[SerializeField] private float m_minSpawnTimer = 0;
-    //[SerializeField] private float m_maxSpawnTimer = 0;
-    [SerializeField] private WorldMovement m_firstWorld = null;
     [SerializeField] private Player m_player = null;
     private bool m_playerAlive = false;
     [SerializeField] private Transform m_levelParent = null;
@@ -90,24 +87,8 @@ public class LevelGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //m_timer = m_minSpawnTimer;
-
         m_player = FindObjectOfType<Player>();
-
-        // Maybe later down the track, this can be automated as well by creating the first prefab at (0, 0, 0) point
-
-        //m_worldList.Add(0, new List<GameObject>());
-        //m_worldList[0].Add(m_firstWorld.gameObject);
-        //activeWorlds.Add(m_firstWorld);
-        //m_timer = Random.Range(m_minSpawnTimer, m_maxSpawnTimer);
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
     private void FixedUpdate()
     {
         if (m_playerAlive)
@@ -115,23 +96,6 @@ public class LevelGenerator : MonoBehaviour
             distance += totalSpeed * Time.fixedDeltaTime;
             distanceText.text = "Distance: " + distance.ToString("0") + "m";
         }
-
-        //if (m_timer > 0)
-        //    m_timer -= Time.fixedDeltaTime;
-        //else
-        //{
-        //    m_timer = m_minSpawnTimer;
-        //    int prefabNumber = Random.Range(0, m_prefab.Count - 1);
-        //    //if (m_worldList[prefabNumber].Count > 0)
-        //    //{
-        //    //    foreach (GameObject obj in m_worldList[prefabNumber])
-        //    //    {
-        //    //        if (!obj.activeSelf)
-        //    //            obj.SetActive(true);
-        //    //    }
-        //    //}
-        //    GameObject go = Instantiate(m_prefab[0], m_spawnerPos.position, Quaternion.identity);
-        //}
     }
 
     public void SpawnChunk()
@@ -173,14 +137,16 @@ public class LevelGenerator : MonoBehaviour
             }
         }
 
+        // Instantiate certain prefab that has been created
         GameObject go = Instantiate(m_worldPrefabs[prefabNumber].gameObject, m_spawnerTransform.position, Quaternion.identity, m_levelParent);
 
+        // Adds the copy of a prefab to list of all worlds
         if (!m_worldList.ContainsKey(prefabNumber))
             m_worldList.Add(prefabNumber, new List<GameObject>());
 
         m_worldList[prefabNumber].Add(go);
 
-
+        // Adds it to list of active worlds
         WorldMovement world = go.GetComponent<WorldMovement>();
         activeWorlds.Add(world);
 
@@ -188,12 +154,14 @@ public class LevelGenerator : MonoBehaviour
         world.speed = -totalSpeed;
     }
 
+    // Used to deactivate certain world chunk in game
     public void Deactivate(WorldMovement world)
     {
         if (activeWorlds.Contains(world))
             activeWorlds.Remove(world);
     }
 
+    // Used to tell level generator that the player died and turns off speed of all current worlds
     public void PlayerDied()
     {
         m_playerAlive = false;

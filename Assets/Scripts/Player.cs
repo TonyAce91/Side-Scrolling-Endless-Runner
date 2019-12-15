@@ -8,7 +8,6 @@ public class Player : MonoBehaviour
 {
 
     Rigidbody2D rb = null;
-    [SerializeField] private float speed = 0;
     [SerializeField] private float m_jumpSpeed = 0;
     [SerializeField] private float m_gravityMultiplier = 2f;
     private LevelGenerator m_generator = null;
@@ -19,7 +18,6 @@ public class Player : MonoBehaviour
     public int m_coins = 0;
     [SerializeField] private Text m_coinText = null;
     [SerializeField] private EndGame endScript = null;
-    private bool jumping = false;
     private bool m_grounded = false;
     private bool m_airborne = false;
     private int m_jumpNumber = 0;
@@ -44,31 +42,21 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        // Jump sequence depending on which platform. Spacebar for PC and tap for mobile
 #if (UNITY_STANDALONE || UNITY_WEBPLAYER || UNITY_WEBGL || UNITY_EDITOR)
         if (Input.GetButtonDown("Jump") && Time.timeScale > 0)
             JumpSequence();
 #elif (UNITY_IOS || UNITY_ANDROID)
         if (Input.GetMouseButtonDown(0) && Time.timeScale > 0)
         {
-            //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //RaycastHit hitInfo;
-            //if (Physics.Raycast(ray, out hitInfo, float.MaxValue, 1 << 5, QueryTriggerInteraction.UseGlobal))
-            //{
-            //    Debug.Log("transform tag: " + hitInfo.transform.tag);
-            //    Debug.Log("collider tag: " + hitInfo.collider.tag);
-            //    if (hitInfo.collider.tag == "Jump Button")
-            //    {
-                    JumpSequence();
-            //    }
-            //}
+            JumpSequence();
         }
 #endif
     }
 
     private void FixedUpdate()
     {
-        //Vector2 moveDirection = new Vector2(0, 0);
-
         // If player face smash the side of a cliff. Velocity will become negative
         if (rb.velocity.x < -3f)
             DeathSequence();
@@ -76,18 +64,11 @@ public class Player : MonoBehaviour
         // If player is falling, increase the effect of gravity to decrease air time and simulate game gravity
         if (rb.velocity.y < 0f)
             rb.velocity += Physics2D.gravity * m_gravityMultiplier * Time.fixedDeltaTime;
-        //if (jumping)
-        //    rb.velocity += new Vector2(0, m_jumpSpeed) * Time.fixedDeltaTime;
-
-
-        //moveDirection.Set(speed, speed);
-        //rb.velocity = new Vector2(speed, rb.velocity.y);
-        ////rb.velocity += new Vector2(speed, 0) * Time.fixedDeltaTime;
     }
 
     public void JumpSequence()
     {
-        //rb.AddForce(new Vector2(0f, m_jumpSpeed));
+        // Checks whether player jumping ground or double jumping but more than double jump
         if (m_grounded || (m_airborne && m_jumpNumber < 2))
         {
             rb.velocity = new Vector2(0, m_jumpSpeed);
@@ -97,45 +78,43 @@ public class Player : MonoBehaviour
 
     private void DeathSequence()
     {
+        // Turns off the character and calls event system for death related events
         gameObject.SetActive(false);
         onDeath.Invoke();
+
+        // turns of movement in all world chunks
         m_generator.PlayerDied();
+
+        // Sends the amount of coin collected to the end game script
         endScript.CollectedCoins(m_coins);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Checks for coin collection
         if (collision.tag == "Coin")
         {
             m_coins++;
-            //Debug.Log("Coins detected");
             collision.gameObject.SetActive(false);
             m_coinText.text = "Coins: " + m_coins;
         }
+
+        // Checks whether player fell from the world
         if (collision.tag == "Fall Limit")
         {
             DeathSequence();
         }
 
+        // Goes through death sequence when player hit an obstacle
         if (collision.tag == "Obstacle")
         {
             DeathSequence();
-            // Maybe create a 2D particle effect
         }
-
-        //if (collision.tag == "Ground")
-        //{
-        //    Debug.Log("Ground detected");
-        //}
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision detected: " + collision.gameObject.tag);
-        //collision.collider.tag = "Ground";
-        //collision.transform.tag = "Ground";
-        //collision.transform.is
-        //collision.gameObject.tag = "Ground";
+        // Checks collision with ground and reset jump counter
         if (collision.collider.tag == "Ground")
         {
             m_grounded = true;
@@ -146,6 +125,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        // Turns of grounded and set airborne after jumping off ground
         if (collision.collider.tag == "Ground")
         {
             m_grounded = false;

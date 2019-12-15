@@ -17,6 +17,7 @@ public class EndGame : MonoBehaviour
 
     private void OnEnable()
     {
+        // Clears text messages and reset string counter
         gameOverText.text = "";
         endMessageText.text = "";
         stringNumber = 0;
@@ -36,6 +37,7 @@ public class EndGame : MonoBehaviour
             timer -= Time.unscaledDeltaTime;
         else
         {
+            // Adds an effect to the game over message by typing one by one
             if (stringNumber < gameOverString.Length)
             {
                 gameOverText.text += gameOverString[stringNumber];
@@ -43,12 +45,14 @@ public class EndGame : MonoBehaviour
                 timer = duration;
             }
         }
+        // Once the game over message has been typed, adds the details of the player's achievement
         if (stringNumber >= gameOverString.Length && m_generator && endMessageText)
         {
             endMessageText.text = "You Travelled " + m_generator.distance.ToString("0") + "m and collected " + m_coins + " coins";
         }
     }
 
+    // Used by player script to send coin information
     public void CollectedCoins(int amount)
     {
         m_coins = amount;

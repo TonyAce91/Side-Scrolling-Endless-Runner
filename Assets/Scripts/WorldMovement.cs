@@ -16,31 +16,24 @@ public class WorldMovement : MonoBehaviour
         m_generator = FindObjectOfType<LevelGenerator>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
     private void FixedUpdate()
     {
+        // Moves the world according to their speed set by level generator
         Vector2 moveDirection = new Vector2(0, 0);
 
         moveDirection.Set(speed, speed);
         rb.velocity = new Vector2(speed, 0);
-        //rb.velocity += new Vector2(speed, 0) * Time.fixedDeltaTime;
-
-
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Used to trigger when to generate worlds
         if (collision.tag == "Spawn Trigger" && m_generator)
             m_generator.SpawnChunk();
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
+        // Turns of the world once it has passed a certain limit
         if (collision.tag == "Spawn Trigger" && m_generator)
         {
             m_generator.Deactivate(this);
